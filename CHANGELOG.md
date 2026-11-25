@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.1 - 2026-11-25
+
+- The package ships only `lang/en`: other languages, including Brazilian Portuguese, come through AMOS
+  (lang.moodle.org). Until the translation is there, sites in other languages show the English strings.
+
 ## 0.3.0 - 2026-11-25
 
 - The test message accepts simple Markdown: `*bold*` or `**bold**`, `_italic_`, `~strike~`, `` `code` `` and
