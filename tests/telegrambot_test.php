@@ -169,4 +169,44 @@ final class telegrambot_test extends \advanced_testcase {
         $this->assertSame('-100999', $loaded->telegrambot_chatid);
         $this->assertTrue($processor->is_user_configured($user));
     }
+
+    /**
+     * The test message of the administration page goes to the typed chat, with the site name in the subject.
+     *
+     * @return void
+     */
+    public function test_send_test(): void {
+        api::set_mock(new MockHandler([new Response(200, [], '{"ok":true,"result":{}}')]));
+        $result = api::send_test(' -1001234567890 ', 'Hello <team>');
+        $this->assertTrue($result['ok']);
+        $history = api::get_history();
+        $this->assertCount(1, $history);
+        $this->assertSame('-1001234567890', $history[0]['chat_id']);
+        $this->assertStringContainsString(s(format_string(get_site()->fullname)), $history[0]['text']);
+        $this->assertStringContainsString('Hello &lt;team&gt;', $history[0]['text']);
+
+        // A refusal comes back without the token.
+        api::set_mock(new MockHandler([new Response(401, [], '{"ok":false,"description":"Unauthorized 123456:SECRET-TOKEN"}')]));
+        $result = api::send_test('@team_alerts', 'x');
+        $this->assertFalse($result['ok']);
+        $this->assertStringContainsString('HTTP 401', $result['error']);
+        $this->assertStringNotContainsString('SECRET-TOKEN', $result['error']);
+    }
+
+    /**
+     * An invalid chat id or a missing token sends nothing.
+     *
+     * @return void
+     */
+    public function test_send_test_refused(): void {
+        api::set_mock(new MockHandler([]));
+        $result = api::send_test('not a chat', 'x');
+        $this->assertFalse($result['ok']);
+        $this->assertSame(get_string('invalidchatid', 'message_telegrambot'), $result['error']);
+
+        set_config('token', '', 'message_telegrambot');
+        $result = api::send_test('42', 'x');
+        $this->assertFalse($result['ok']);
+        $this->assertSame([], api::get_history());
+    }
 }

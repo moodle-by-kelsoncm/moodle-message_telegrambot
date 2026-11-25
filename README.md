@@ -7,13 +7,13 @@
 
 Telegram bot message processor for Moodle (`message_telegrambot`). Delivers Moodle notifications to the Telegram chat chosen by each user: the chat with the bot, a group or a channel. It is a new component: the old `message_telegram` of the Plugins directory (2017, Moodle 3.2 and 3.3) can stay installed.
 
-**Status:** 0.1.1 (alpha). Download it from the [releases](https://github.com/moodle-by-kelsoncm/moodle-message_telegrambot/releases).
+**Status:** 0.2.0 (alpha). Download it from the [releases](https://github.com/moodle-by-kelsoncm/moodle-message_telegrambot/releases).
 
 Documentation (English and Brazilian Portuguese): https://moodle-by-kelsoncm.github.io/moodle-message_telegrambot/
 
 Requirements: Moodle 4.5 or 5.3 (LTS).
 
-Quick start: install the plugin in `message/output/telegrambot` (`public/message/output/telegrambot` on Moodle 5.1 and later) and upgrade Moodle. Then set the bot token in *Site administration > Plugins > Message outputs > Telegram bot*.
+Quick start: install the plugin in `message/output/telegrambot` (`public/message/output/telegrambot` on Moodle 5.1 and later) and upgrade Moodle. Then set the bot token in *Site administration > General > Messaging > Telegram bot*, and send a test message from the link on that page.
 
 Part of [moodle-by-kelsoncm](https://github.com/moodle-by-kelsoncm).
 
