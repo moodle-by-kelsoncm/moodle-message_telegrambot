@@ -9,3 +9,11 @@ Each user sets the chat id in the notification preferences:
 
 For alerts to a team, create a service user (authentication "No login") with the id of the team group and use it as
 the recipient, for example in a channel of ``local_alerthub``.
+
+Formatting
+----------
+
+* Notifications keep the formatting of their HTML version: bold, italics, underline, strike, code, quotes and links.
+  The subject goes in bold at the top and the link of the notification at the end.
+* The test message accepts simple Markdown: ``*bold*`` or ``**bold**``, ``_italic_``, ``~strike~``, ```code``` and
+  ``[text](https://...)``.
