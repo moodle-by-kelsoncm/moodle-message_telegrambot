@@ -131,6 +131,27 @@ final class api {
     }
 
     /**
+     * Sends the test message of the administration page.
+     *
+     * @param string $chatid Chat id (user, group or channel), checked as in the user preferences.
+     * @param string $text Plain text of the message.
+     * @return array{ok: bool, error: string}
+     */
+    public static function send_test(string $chatid, string $text): array {
+        global $CFG;
+        require_once($CFG->dirroot . '/message/output/telegrambot/message_output_telegrambot.php');
+        $chatid = \message_output_telegrambot::clean_chatid($chatid);
+        if ($chatid === '') {
+            return ['ok' => false, 'error' => get_string('invalidchatid', 'message_telegrambot')];
+        }
+        if (!self::is_configured()) {
+            return ['ok' => false, 'error' => 'bot token not configured'];
+        }
+        $subject = get_string('testmessage_subject', 'message_telegrambot', format_string(get_site()->fullname));
+        return self::send($chatid, self::format($subject, $text));
+    }
+
+    /**
      * Removes the token from an error message.
      *
      * @param string $message Message.

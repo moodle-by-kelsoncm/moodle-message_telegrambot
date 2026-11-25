@@ -24,7 +24,25 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+if ($hassiteconfig) {
+    $ADMIN->add('messaging', new admin_externalpage(
+        'message_telegrambot_testmessage',
+        new lang_string('testmessage', 'message_telegrambot'),
+        new moodle_url('/message/output/telegrambot/testmessage.php'),
+        'moodle/site:config'
+    ));
+}
+
 if ($ADMIN->fulltree) {
+    $settings->add(new admin_setting_heading(
+        'message_telegrambot/testmessagelink',
+        '',
+        new lang_string(
+            'testmessage_link',
+            'message_telegrambot',
+            (new moodle_url('/message/output/telegrambot/testmessage.php'))->out(false)
+        )
+    ));
     $settings->add(new admin_setting_configpasswordunmask(
         'message_telegrambot/token',
         new lang_string('token', 'message_telegrambot'),

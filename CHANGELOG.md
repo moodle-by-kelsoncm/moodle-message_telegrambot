@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.0 - 2026-11-25
+
+- Administration page *Send a Telegram test message* (*Site administration > General > Messaging*), linked from
+  the bot settings: sends a message to a chat id with the saved token and shows whether Telegram delivered it, or the
+  error it returned without the token.
+- The documentation points to the actual place of the settings (*General > Messaging*).
+
 ## 0.1.1 - 2026-11-25
 
 - Credits of moodle-by-kelsoncm; first public release.
