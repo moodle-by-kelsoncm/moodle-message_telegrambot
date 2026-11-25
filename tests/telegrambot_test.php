@@ -177,13 +177,13 @@ final class telegrambot_test extends \advanced_testcase {
      */
     public function test_send_test(): void {
         api::set_mock(new MockHandler([new Response(200, [], '{"ok":true,"result":{}}')]));
-        $result = api::send_test(' -1001234567890 ', 'Hello <team>');
+        $result = api::send_test(' -1001234567890 ', 'Hello <team>, *done*');
         $this->assertTrue($result['ok']);
         $history = api::get_history();
         $this->assertCount(1, $history);
         $this->assertSame('-1001234567890', $history[0]['chat_id']);
         $this->assertStringContainsString(s(format_string(get_site()->fullname)), $history[0]['text']);
-        $this->assertStringContainsString('Hello &lt;team&gt;', $history[0]['text']);
+        $this->assertStringContainsString('Hello &lt;team&gt;, <b>done</b>', $history[0]['text']);
 
         // A refusal comes back without the token.
         api::set_mock(new MockHandler([new Response(401, [], '{"ok":false,"description":"Unauthorized 123456:SECRET-TOKEN"}')]));
@@ -208,5 +208,69 @@ final class telegrambot_test extends \advanced_testcase {
         $result = api::send_test('42', 'x');
         $this->assertFalse($result['ok']);
         $this->assertSame([], api::get_history());
+    }
+
+    /**
+     * Simple Markdown becomes Telegram HTML, after escaping; snake_case and unsafe links stay as typed.
+     *
+     * @return void
+     */
+    public function test_markdown(): void {
+        $this->assertSame('<b>bold</b> and <b>bold</b>', api::markdown('*bold* and **bold**'));
+        $this->assertSame('<i>italic</i>, <i>also</i> and <s>gone</s>', api::markdown('_italic_, __also__ and ~gone~'));
+        $this->assertSame('<code>a *not* b</code> 1 &lt; 2', api::markdown("\x60a *not* b\x60 1 < 2"));
+        $this->assertSame('my_var_name and 2*3*4', api::markdown('my_var_name and 2*3*4'));
+        $link = api::markdown('[site](https://example.com/?a=1&b=2)');
+        $this->assertSame('<a href="https://example.com/?a=1&amp;b=2">site</a>', $link);
+        $this->assertSame('[x](javascript:alert(1))', api::markdown('[x](javascript:alert(1))'));
+        $this->assertSame('&lt;b&gt;no&lt;/b&gt;', api::markdown('<b>no</b>'));
+    }
+
+    /**
+     * The HTML of a notification keeps the tags Telegram accepts and drops the rest.
+     *
+     * @return void
+     */
+    public function test_html(): void {
+        $source = '<p>Hello <strong>team</strong> &amp; <em>all</em></p>' .
+            '<ul><li>one</li><li>two</li></ul><p><a href="https://example.com/x?a=1&amp;b=2">open</a> ' .
+            '<a href="javascript:alert(1)">bad</a> <span class="x">plain</span><script>alert(1)</script></p>';
+        $html = api::html($source);
+        $this->assertStringContainsString('Hello <b>team</b> &amp; <i>all</i>', $html);
+        $this->assertStringContainsString("• one\n• two", $html);
+        $this->assertStringContainsString('<a href="https://example.com/x?a=1&amp;b=2">open</a>', $html);
+        $this->assertStringContainsString('bad plain', $html);
+        $this->assertStringNotContainsString('javascript', $html);
+        $this->assertStringNotContainsString('<span', $html);
+        $this->assertStringNotContainsString('alert(1)', $html);
+        $this->assertSame('', api::html('  '));
+    }
+
+    /**
+     * A notification does not repeat its subject nor print its link before the "Open" link.
+     *
+     * @return void
+     */
+    public function test_format_drops_repeated_lines(): void {
+        $url = 'https://example.com/local/alerthub/index.php';
+        $html = api::format('[Info] Hub test', "[Info] Hub test\n\nSent by the channel.\n\n" . $url, $url, 'Open');
+        $expected = "<b>[Info] Hub test</b>\n\nSent by the channel.\n\n" . '<a href="' . $url . '">Open</a>';
+        $this->assertSame($expected, $html);
+    }
+
+    /**
+     * A notification with HTML is sent with its formatting.
+     *
+     * @return void
+     */
+    public function test_send_message_html(): void {
+        $user = $this->getDataGenerator()->create_user();
+        set_user_preference(\message_output_telegrambot::PREFERENCE, '42', $user);
+        api::set_mock(new MockHandler([new Response(200, [], '{"ok":true,"result":{}}')]));
+        $eventdata = $this->eventdata($user);
+        $eventdata->fullmessagehtml = '<p>Course <strong>A</strong> &amp; B</p>';
+
+        $this->assertTrue((new \message_output_telegrambot())->send_message($eventdata));
+        $this->assertStringContainsString('Course <b>A</b> &amp; B', api::get_history()[0]['text']);
     }
 }

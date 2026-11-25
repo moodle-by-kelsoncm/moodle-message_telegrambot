@@ -53,9 +53,15 @@ class message_output_telegrambot extends message_output {
         if ($chatid === '' || !api::is_configured()) {
             return true;
         }
-        $text = (string) ($eventdata->fullmessage ?? '');
-        if ($text === '' && !empty($eventdata->fullmessagehtml)) {
-            $text = html_to_text($eventdata->fullmessagehtml, 0, false);
+        // The HTML version keeps the formatting (bold, links...); otherwise the plain text, escaped.
+        $ishtml = false;
+        $text = '';
+        if (!empty($eventdata->fullmessagehtml)) {
+            $text = api::html((string) $eventdata->fullmessagehtml);
+            $ishtml = $text !== '';
+        }
+        if ($text === '') {
+            $text = (string) ($eventdata->fullmessage ?? '');
         }
         if ($text === '') {
             $text = (string) ($eventdata->smallmessage ?? '');
@@ -67,7 +73,7 @@ class message_output_telegrambot extends message_output {
                 : (string) $eventdata->contexturl;
             $urlname = (string) ($eventdata->contexturlname ?? '');
         }
-        $result = api::send($chatid, api::format((string) ($eventdata->subject ?? ''), $text, $url, $urlname));
+        $result = api::send($chatid, api::format((string) ($eventdata->subject ?? ''), $text, $url, $urlname, $ishtml));
         if (!$result['ok']) {
             debugging('message_telegrambot: ' . $result['error'], DEBUG_DEVELOPER);
         }

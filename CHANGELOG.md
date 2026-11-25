@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.3.0 - 2026-11-25
+
+- The test message accepts simple Markdown: `*bold*` or `**bold**`, `_italic_`, `~strike~`, `` `code` `` and
+  `[text](https://...)`.
+- Notifications keep their formatting: the HTML version is converted to the tags Telegram accepts (bold, italics,
+  underline, strike, code, quotes and http/https links); paragraphs and list items become new lines.
+- Notifications no longer repeat the subject as the first line of the text, nor print their link before the "Open"
+  link.
+
 ## 0.2.0 - 2026-11-25
 
 - Administration page *Send a Telegram test message* (*Site administration > General > Messaging*), linked from

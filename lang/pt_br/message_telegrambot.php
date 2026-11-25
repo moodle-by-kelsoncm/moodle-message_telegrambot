@@ -36,7 +36,7 @@ $string['privacy:metadata:telegram:text'] = 'O assunto, o texto e o link da noti
 $string['testmessage'] = 'Enviar mensagem de teste ao Telegram';
 $string['testmessage_default'] = 'Mensagem de teste de {$a}. Se você está lendo, o bot do Telegram do site funciona.';
 $string['testmessage_failed'] = 'O Telegram não entregou a mensagem: {$a}';
-$string['testmessage_intro'] = 'Envia uma mensagem a um chat do Telegram com o token salvo nas configurações. Use para conferir o token e o id do chat antes de ativar as notificações. O bot precisa estar no grupo, ou a pessoa precisa ter iniciado uma conversa com ele.';
+$string['testmessage_intro'] = 'Envia uma mensagem a um chat do Telegram com o token salvo nas configurações. Use para conferir o token e o id do chat antes de ativar as notificações. O bot precisa estar no grupo, ou a pessoa precisa ter iniciado uma conversa com ele. O texto aceita Markdown simples: *negrito*, _itálico_, ~riscado~, código entre crases e [texto](https://...).';
 $string['testmessage_link'] = '<a href="{$a}">Envie uma mensagem de teste</a> para conferir o token e o id de um chat.';
 $string['testmessage_notoken'] = 'O token do bot ainda não foi configurado. <a href="{$a}">Configure-o</a> antes de enviar uma mensagem de teste.';
 $string['testmessage_send'] = 'Enviar mensagem de teste';
